@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView img1,img2,img3;
     private Button Buttonmulai;
     private boolean isPlay;
-    private Wheel wheel1,wheel2,wheel3;
+//    private Wheel wheel1,wheel2,wheel3;
     private boolean isStarted;
     AsyncSlotTask img11, img21, img31;
     private static int[] img={R.drawable.slot1, R.drawable.slot2, R.drawable.slot3, R.drawable.slot4, R.drawable.slot5, R.drawable.slotbar};
@@ -29,12 +29,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         img1 = findViewById(R.id.gambar1);
         img2 = findViewById(R.id.gambar2);
         img3 = findViewById(R.id.gambar3);
+        img1.setImageResource(R.drawable.slotbar);
+        img2.setImageResource(R.drawable.slotbar);
+        img3.setImageResource(R.drawable.slotbar);
 //        slotbar = findViewById(R.id.fotoslot);
         Buttonmulai = findViewById(R.id.buttonmulai);
+        Buttonmulai.setOnClickListener(this);
         pesan = findViewById(R.id.pesan);
-//        Buttonmulai.setOnClickListener(new View.OnClickListener() {
-//
-//        });
+
     }
     @Override
     public void onClick(View v) {
@@ -57,11 +59,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             img31._Play = false;
 
             if (img11.getImageId() == img21.getImageId() && img21.getImageId() == img31.getImageId()) {
-                Toast.makeText(getApplicationContext(), "JACKPOT", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Anda Menang Telak", Toast.LENGTH_SHORT).show();
             }else if (img11.getImageId() == img21.getImageId() || img21.getImageId() == img31.getImageId() || img11.getImageId() == img31.getImageId()) {
-                Toast.makeText(getApplicationContext(), "YOU WIN", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Anda Menang", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "YOU LOSE", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "ANda Kalah", Toast.LENGTH_SHORT).show();
             }
 
             Buttonmulai.setText("PLAY");
