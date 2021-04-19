@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public boolean _Play =true;
 
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
+        protected void onPostExecute(Boolean a) {
+            super.onPostExecute(a);
         }
 
         public AsyncSlotTask(){
