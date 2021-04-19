@@ -2,25 +2,26 @@ package com.example.slotmachine;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView pesan;
     private ImageView img1,img2,img3;
     private Button Buttonmulai;
+    private boolean isPlay;
     private Wheel wheel1,wheel2,wheel3;
     private boolean isStarted;
+    AsyncSlotTask img11, img21, img31;
+    private static int[] img={R.drawable.slot1, R.drawable.slot2, R.drawable.slot3, R.drawable.slot4, R.drawable.slot5, R.drawable.slotbar};
 
-    public static final Random random = new Random();
-    public static long randomLong(Long lower, long upper) {
-        return lower + (long) (random.nextDouble() * (upper-lower));
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,72 +29,87 @@ public class MainActivity extends AppCompatActivity {
         img1 = findViewById(R.id.gambar1);
         img2 = findViewById(R.id.gambar2);
         img3 = findViewById(R.id.gambar3);
+//        slotbar = findViewById(R.id.fotoslot);
         Buttonmulai = findViewById(R.id.buttonmulai);
         pesan = findViewById(R.id.pesan);
-        Buttonmulai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isStarted){
-                    wheel1.stopwheel();
-                    wheel2.stopwheel();
-                    wheel3.stopwheel();
-                    if (wheel1.currentIndex == wheel2.currentIndex && wheel2.currentIndex == wheel3.currentIndex) {
-                        pesan.setText("Menang Telak");
-                    }else if (wheel1.currentIndex == wheel2.currentIndex || wheel2.currentIndex == wheel3.currentIndex) {
-                        pesan.setText("Menang");
-                    }else {
-                        pesan.setText("Kalah");
-                    }
-                    Buttonmulai.setText("Start");
-                    isStarted = false;
-                }else{
-                    wheel1 = new Wheel(new Wheel.wheellistener(){
-                        @Override
-                        public void newImage(int img) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    img1.setImageResource(img);
-                                }
-                            });
-                        }
-                    }, 200, randomLong(0, 200));
+//        Buttonmulai.setOnClickListener(new View.OnClickListener() {
+//
+//        });
+    }
+    @Override
+    public void onClick(View v) {
+        if (v.getId()==Buttonmulai.getId()){
+            if(!isPlay){
+                img11 = new AsyncSlotTask();
+                img21 = new AsyncSlotTask();
+                img31 = new AsyncSlotTask();
 
-                    wheel1.start();
+                img11.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, img1 );
+                img21.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, img2 );
+                img31.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, img3 );
 
-                    wheel2 = new Wheel(new Wheel.wheellistener(){
-                        @Override
-                        public void newImage(int img) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    img2.setImageResource(img);
-                                }
-                            });
-                        }
-                    }, 200, randomLong(0, 200));
+                Buttonmulai.setText("STOP");
+                isPlay = !isPlay;
+            }
+        }else {
+            img11._Play = false;
+            img21._Play = false;
+            img31._Play = false;
 
-                    wheel2.start();
+            if (img11.getImageId() == img21.getImageId() && img21.getImageId() == img31.getImageId()) {
+                Toast.makeText(getApplicationContext(), "JACKPOT", Toast.LENGTH_SHORT).show();
+            }else if (img11.getImageId() == img21.getImageId() || img21.getImageId() == img31.getImageId() || img11.getImageId() == img31.getImageId()) {
+                Toast.makeText(getApplicationContext(), "YOU WIN", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "YOU LOSE", Toast.LENGTH_SHORT).show();
+            }
 
-                    wheel3 = new Wheel(new Wheel.wheellistener(){
-                        @Override
-                        public void newImage(int img) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    img3.setImageResource(img);
-                                }
-                            });
-                        }
-                    }, 200, randomLong(0, 200));
+            Buttonmulai.setText("PLAY");
+            isPlay = !isPlay;
+        }
 
-                    wheel3.start();
+    }
 
-                    Buttonmulai.setText("Stop");
-                    pesan.setText("");
-                    isStarted=true;
+    private class AsyncSlotTask extends AsyncTask<ImageView, Integer, Boolean> {
+        ImageView _Slotimg;
+        Random random = new Random();
+        public boolean _Play =true;
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
+
+        public AsyncSlotTask(){
+            _Play = true;
+        }
+
+        public Object getImageId() {
+            return _Slotimg.getDrawable().getConstantState();
+        }
+
+        @Override
+        protected Boolean doInBackground(ImageView... imgs) {
+            _Slotimg = imgs[0];
+            int a =0;
+            while (_Play){
+                int i = random.nextInt(6);
+                publishProgress(i);
+
+                try {
+                    Thread.sleep(random.nextInt(500));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        });
+            return !_Play;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            _Slotimg.setImageResource(img[values[0]]);
+        }
     }
+
 }
